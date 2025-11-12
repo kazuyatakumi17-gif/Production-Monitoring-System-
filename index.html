@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halagel Production Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #059669;
+            --accent: #dc2626;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --dark: #1f2937;
+            --light: #f8fafc;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+        
+        .dashboard-container {
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        /* Header Styles */
+        .dashboard-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .company-info h1 {
+            color: var(--gray-800);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .company-info p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+        
+        /* Production Selector */
+        .production-selector {
+            display: flex;
+            background: var(--gray-100);
+            border-radius: 10px;
+            padding: 0.5rem;
+            gap: 0.5rem;
+        }
+        
+        .prod-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--gray-600);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .prod-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .prod-btn i {
+            font-size: 1rem;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .action-btn.secondary {
+            background: var(--success);
+        }
+        
+        .action-btn.secondary:hover {
+            background: #047857;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .stat-icon.primary { background: #dbeafe; color: var(--primary); }
+        .stat-icon.success { background: #d1fae5; color: var(--success); }
+        .stat-icon.accent { background: #fef3c7; color: var(--warning); }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .stat-date {
+            color: var(--gray-600);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            padding: 0.5rem;
+            margin-bottom: 1.5rem;
+            gap: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--gray-600);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 1.5rem;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .data-table th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .data-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.85rem;
+        }
+        
+        .data-table tr:hover {
+            background: var(--gray-100);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--gray-600);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+        
+        /* Message Styles */
+        .message {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-weight: 500;
+            display: none;
+            border-left: 4px solid;
+        }
+        
+        .message.success {
+            background: #f0fdf4;
+            color: #166534;
+            border-left-color: #22c55e;
+            display: block;
+        }
+        
+        .message.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-left-color: #ef4444;
+            display: block;
+        }
+        
+        .message.info {
+            background: #eff6ff;
+            color: #1e40af;
+            border-left-color: #3b82f6;
+            display: block;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 0.5rem;
+            }
+            
+            .production-selector {
+                flex-wrap: wrap;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-navigation {
+                flex-direction: column;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+        
+        .text-green { color: var(--success); }
+        .text-red { color: var(--danger); }
+        .text-center { text-align: center; }
+        .font-semibold { font-weight: 600; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+            </div>
+             <div class="company-info">
+                    <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-gradient-to-br from-indigo-600 to-purple-600 p-3 rounded-xl shadow-lg">
+                        <img id="companyLogo" src="data:image/png;base64,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">
+                    <div> 
+                   </div>
+                        <h1>Halagel Manufacturing</h1>
+                        <p>Production Monitoring System</p>
+                    </div>
+                </div>
+                
+                <div class="production-selector">
+                    <button class="prod-btn active" onclick="selectProduction('healthcare')">
+                        <i class="fas fa-capsules"></i>
+                        Healthcare
+                    </button>
+                    <button class="prod-btn" onclick="selectProduction('toothpaste')">
+                        <i class="fas fa-tooth"></i>
+                        Toothpaste
+                    </button>
+                    <button class="prod-btn" onclick="selectProduction('rocksalt')">
+                        <i class="fas fa-gem"></i>
+                        Rocksalt
+                    </button>
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="plan-entry.html" class="action-btn">
+                        <i class="fas fa-calendar-plus"></i>
+                        Production Planning
+                    </a>
+                    <a href="actual-entry.html" class="action-btn secondary">
+                        <i class="fas fa-clipboard-check"></i>
+                        Actual Production
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Message Display -->
+        <div id="message" class="message info">
+            <i class="fas fa-info-circle"></i> Dashboard loaded successfully. Use production forms to add data.
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="totalProduction">0</div>
+                        <div class="stat-label">Total Production (Units)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon success">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="efficiency">0%</div>
+                        <div class="stat-label">Production Efficiency</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon accent">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="totalManpower">0</div>
+                        <div class="stat-label">Total Manpower</div>
+                        <div class="stat-date" id="manpowerDate">Last updated: No data</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="showTab('schedule')">
+                <i class="fas fa-calendar-week"></i>
+                Weekly Schedule
+            </button>
+            <button class="tab-btn" onclick="showTab('daily')">
+                <i class="fas fa-clipboard-list"></i>
+                Daily Operations
+            </button>
+        </div>
+
+        <!-- Weekly Schedule View -->
+        <div id="scheduleView" class="table-container">
+            <div class="empty-state" id="scheduleEmptyState">
+                <i class="fas fa-calendar-plus"></i>
+                <h3>No Schedule Data Available</h3>
+                <p>Create production plans to see weekly schedules</p>
+            </div>
+            <div class="hidden" id="scheduleTableContainer">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ACTIVITY</th>
+                            <th>SHIFT</th>
+                            <th>SUNDAY</th>
+                            <th>MONDAY</th>
+                            <th>TUESDAY</th>
+                            <th>WEDNESDAY</th>
+                            <th>THURSDAY</th>
+                            <th>FRIDAY</th>
+                            <th>SATURDAY</th>
+                            <th>WEEKLY TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Daily Operations View -->
+        <div id="dailyView" class="table-container hidden">
+            <div class="empty-state" id="dailyEmptyState">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No Production Data Available</h3>
+                <p>Submit actual production data to see daily operations</p>
+            </div>
+            <div class="hidden" id="dailyTableContainer">
+                <table class="data-table" id="dailyTable">
+                    <thead>
+                        <tr>
+                            <th>MONTH</th>
+                            <th>DATE</th>
+                            <th>DAY</th>
+                            <th colspan="5">PREMIXING</th>
+                            <th colspan="5" id="processHeader">PROCESS</th>
+                            <th colspan="5" id="sortingHeader">SORTING</th>
+                            <th colspan="5">PACKING</th>
+                            <th>DAILY TOTAL</th>
+                        </tr>
+                        <tr>
+                            <th></th><th></th><th></th>
+                            <!-- Premixing -->
+                            <th>Planned Product</th><th>Planned Qty</th><th>Actual Product</th><th>Batch</th><th>Actual Qty</th>
+                            <!-- Process/Filling -->
+                            <th>Planned Product</th><th>Planned Qty</th><th>Actual Product</th><th>Batch</th><th>Actual Qty</th>
+                            <!-- Sorting -->
+                            <th>Planned Product</th><th>Planned Qty</th><th>Actual Product</th><th>Batch</th><th>Actual Qty</th>
+                            <!-- Packing -->
+                            <th>Planned Product</th><th>Planned Qty</th><th>Actual Product</th><th>Batch</th><th>Actual Qty</th>
+                            <!-- Daily Total -->
+                            <th>Total Units</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dailyTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SHEET_URL = '';
+
+        let currentProduction = 'healthcare';
+
+        function selectProduction(type) {
+            currentProduction = type;
+            
+            // Update active button
+            document.querySelectorAll('.prod-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            // Update process headers based on production type
+            const processHeader = document.getElementById('processHeader');
+            const sortingHeader = document.getElementById('sortingHeader');
+            
+            if (type === 'toothpaste') {
+                processHeader.textContent = 'FILLING';
+                sortingHeader.style.display = 'none';
+                // Hide sorting columns for toothpaste
+                document.querySelectorAll('#dailyTable th:nth-child(13), #dailyTable th:nth-child(14), #dailyTable th:nth-child(15), #dailyTable th:nth-child(16), #dailyTable th:nth-child(17)').forEach(th => th.style.display = 'none');
+                document.querySelectorAll('#dailyTable td:nth-child(13), #dailyTable td:nth-child(14), #dailyTable td:nth-child(15), #dailyTable td:nth-child(16), #dailyTable td:nth-child(17)').forEach(td => td.style.display = 'none');
+            } else {
+                processHeader.textContent = 'PROCESS';
+                sortingHeader.style.display = '';
+                // Show sorting columns for other types
+                document.querySelectorAll('#dailyTable th:nth-child(13), #dailyTable th:nth-child(14), #dailyTable th:nth-child(15), #dailyTable th:nth-child(16), #dailyTable th:nth-child(17)').forEach(th => th.style.display = '');
+                document.querySelectorAll('#dailyTable td:nth-child(13), #dailyTable td:nth-child(14), #dailyTable td:nth-child(15), #dailyTable td:nth-child(16), #dailyTable td:nth-child(17)').forEach(td => td.style.display = '');
+            }
+            
+            loadData();
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            document.getElementById('scheduleView').classList.toggle('hidden', tab !== 'schedule');
+            document.getElementById('dailyView').classList.toggle('hidden', tab !== 'daily');
+        }
+
+        function loadData() {
+            const timestamp = new Date().getTime();
+            
+            fetch(`${GOOGLE_SHEET_URL}?type=${currentProduction}&_=${timestamp}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.stats && data.stats.totalProduction > 0) {
+                        updateDashboardData(data);
+                        showMessage('Data loaded successfully!', 'success');
+                    } else {
+                        showMessage('No production data found. Submit data through production forms.', 'info');
+                        resetDashboard();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    showMessage('Error loading data. Please try again.', 'error');
+                    resetDashboard();
+                });
+        }
+
+        function updateDashboardData(data) {
+            // Update stats cards
+            document.getElementById('totalProduction').textContent = data.stats.totalProduction.toLocaleString();
+            document.getElementById('efficiency').textContent = data.stats.efficiency;
+            document.getElementById('totalManpower').textContent = data.stats.totalManpower.toLocaleString();
+            document.getElementById('manpowerDate').textContent = 'Last updated: ' + (data.manpower.date || 'No data');
+            
+            // Render tables or show empty state
+            if (data.weekly && data.weekly.length > 0) {
+                document.getElementById('scheduleEmptyState').classList.add('hidden');
+                document.getElementById('scheduleTableContainer').classList.remove('hidden');
+                renderScheduleTable(data.weekly);
+            } else {
+                document.getElementById('scheduleEmptyState').classList.remove('hidden');
+                document.getElementById('scheduleTableContainer').classList.add('hidden');
+            }
+            
+            if (data.daily && data.daily.length > 0) {
+                document.getElementById('dailyEmptyState').classList.add('hidden');
+                document.getElementById('dailyTableContainer').classList.remove('hidden');
+                renderDailyOperations(data.daily);
+            } else {
+                document.getElementById('dailyEmptyState').classList.remove('hidden');
+                document.getElementById('dailyTableContainer').classList.add('hidden');
+            }
+        }
+
+        function resetDashboard() {
+            document.getElementById('totalProduction').textContent = '0';
+            document.getElementById('efficiency').textContent = '0%';
+            document.getElementById('totalManpower').textContent = '0';
+            document.getElementById('manpowerDate').textContent = 'Last updated: No data';
+            
+            document.getElementById('scheduleEmptyState').classList.remove('hidden');
+            document.getElementById('scheduleTableContainer').classList.add('hidden');
+            document.getElementById('dailyEmptyState').classList.remove('hidden');
+            document.getElementById('dailyTableContainer').classList.add('hidden');
+        }
+
+        function renderScheduleTable(weeklyData) {
+            var tbody = document.getElementById('scheduleTableBody');
+            tbody.innerHTML = '';
+
+            weeklyData.forEach(function(item) {
+                item.shifts.forEach(function(shift, index) {
+                    var tr = document.createElement('tr');
+                    
+                    if (index === 0) {
+                        var activityCell = document.createElement('td');
+                        activityCell.className = 'font-semibold';
+                        activityCell.textContent = item.activity;
+                        tr.appendChild(activityCell);
+                    } else {
+                        var emptyCell = document.createElement('td');
+                        tr.appendChild(emptyCell);
+                    }
+                    
+                    var shiftCell = document.createElement('td');
+                    shiftCell.textContent = shift.type;
+                    tr.appendChild(shiftCell);
+                    
+                    shift.data.forEach(function(cellData, i) {
+                        var td = document.createElement('td');
+                        td.className = 'text-center';
+                        
+                        if (cellData === 'OFF' || cellData === 'No data') {
+                            td.className += ' text-red';
+                            td.textContent = 'OFF';
+                        } else if (i === shift.data.length - 1) {
+                            td.className += ' font-semibold';
+                            td.textContent = cellData;
+                        } else {
+                            td.textContent = cellData;
+                        }
+                        
+                        tr.appendChild(td);
+                    });
+                    
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        function renderDailyOperations(data) {
+            var tbody = document.getElementById('dailyTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(function(record) {
+                var tr = document.createElement('tr');
+                
+                // Month, Date, Day
+                tr.appendChild(createCell(record.month, 'font-semibold'));
+                tr.appendChild(createCell(record.date, 'font-semibold'));
+                tr.appendChild(createCell(record.day, 'font-semibold'));
+                
+                // Premixing
+                tr.appendChild(createCell(record.premixing.product));
+                tr.appendChild(createCell(record.premixing.planned));
+                tr.appendChild(createCell(record.premixing.actualProduct));
+                tr.appendChild(createCell(record.premixing.batch));
+                tr.appendChild(createCell(record.premixing.actual, record.premixing.actual >= record.premixing.planned ? 'text-green' : 'text-red'));
+                
+                // Process/Filling
+                tr.appendChild(createCell(record.process.product));
+                tr.appendChild(createCell(record.process.planned));
+                tr.appendChild(createCell(record.process.actualProduct));
+                tr.appendChild(createCell(record.process.batch));
+                tr.appendChild(createCell(record.process.actual, record.process.actual >= record.process.planned ? 'text-green' : 'text-red'));
+                
+                // Sorting (only for healthcare and rocksalt)
+                if (currentProduction !== 'toothpaste') {
+                    tr.appendChild(createCell(record.sorting.product));
+                    tr.appendChild(createCell(record.sorting.planned));
+                    tr.appendChild(createCell(record.sorting.actualProduct));
+                    tr.appendChild(createCell(record.sorting.batch));
+                    tr.appendChild(createCell(record.sorting.actual, record.sorting.actual >= record.sorting.planned ? 'text-green' : 'text-red'));
+                }
+                
+                // Packing
+                tr.appendChild(createCell(record.packing.product));
+                tr.appendChild(createCell(record.packing.planned));
+                tr.appendChild(createCell(record.packing.actualProduct));
+                tr.appendChild(createCell(record.packing.batch));
+                tr.appendChild(createCell(record.packing.actual, record.packing.actual >= record.packing.planned ? 'text-green' : 'text-red'));
+                
+                // Daily Total
+                tr.appendChild(createCell(record.dailyTotal, 'font-semibold text-center'));
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        function createCell(content, className = '') {
+            var td = document.createElement('td');
+            td.textContent = content;
+            if (className) td.className = className;
+            return td;
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+            messageDiv.className = `message ${type}`;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
+    </script>
+</body>
+</html>
+                        
