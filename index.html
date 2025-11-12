@@ -71,9 +71,6 @@
         .logo {
             width: 60px;
             height: 60px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         .logo img {
@@ -738,11 +735,56 @@
             var tbody = document.getElementById('dailyTableBody');
             tbody.innerHTML = '';
 
-            data.forEach(function(record) {
+            let lastMonth = '';
+            let monthRowspan = 0;
+            let monthStartIndex = 0;
+
+            // First pass: calculate rowspans for each month
+            const monthGroups = [];
+            data.forEach(function(record, index) {
+                if (record.month !== lastMonth) {
+                    if (lastMonth !== '') {
+                        monthGroups.push({
+                            month: lastMonth,
+                            startIndex: monthStartIndex,
+                            rowspan: monthRowspan
+                        });
+                    }
+                    lastMonth = record.month;
+                    monthStartIndex = index;
+                    monthRowspan = 1;
+                } else {
+                    monthRowspan++;
+                }
+            });
+            
+            // Add the last month group
+            if (lastMonth !== '') {
+                monthGroups.push({
+                    month: lastMonth,
+                    startIndex: monthStartIndex,
+                    rowspan: monthRowspan
+                });
+            }
+
+            // Second pass: render rows
+            let currentMonthGroup = 0;
+            data.forEach(function(record, index) {
                 var tr = document.createElement('tr');
                 
-                // Month, Date, Day
-                tr.appendChild(createCell(record.month, 'font-semibold'));
+                // Month cell (only for first row of each month)
+                if (currentMonthGroup < monthGroups.length && 
+                    index === monthGroups[currentMonthGroup].startIndex) {
+                    var monthCell = document.createElement('td');
+                    monthCell.textContent = monthGroups[currentMonthGroup].month;
+                    monthCell.className = 'font-semibold';
+                    monthCell.rowSpan = monthGroups[currentMonthGroup].rowspan;
+                    monthCell.style.verticalAlign = 'middle';
+                    tr.appendChild(monthCell);
+                    currentMonthGroup++;
+                }
+                
+                // Date, Day
                 tr.appendChild(createCell(record.date, 'font-semibold'));
                 tr.appendChild(createCell(record.day, 'font-semibold'));
                 
