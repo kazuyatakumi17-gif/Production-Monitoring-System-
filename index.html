@@ -698,7 +698,7 @@
             // First pass: consolidate data by date
             data.forEach(function(record) {
                 const dateKey = record.date;
-                console.log('Processing record:', record); // Debug log
+                console.log('Processing record - Date:', dateKey, 'Manpower:', record.manpower, 'Has Actual:', record.hasActualData); // Debug log
                 
                 if (!dateMap.has(dateKey)) {
                     dateMap.set(dateKey, {
@@ -736,9 +736,10 @@
                         existing.packing.batch = record.packing.batch || existing.packing.batch;
                         existing.packing.actual = record.packing.actual || existing.packing.actual;
                         
-                        // FIX: Properly update manpower from actual data
-                        if (record.manpower && record.manpower > 0) {
+                        // CRITICAL FIX: Always update manpower from actual data
+                        if (record.manpower !== undefined && record.manpower !== null) {
                             existing.manpower = record.manpower;
+                            console.log('Updated manpower for', dateKey, 'to:', record.manpower); // Debug log
                         }
                         
                         existing.dailyTotal = record.dailyTotal || existing.dailyTotal;
@@ -858,7 +859,7 @@
                 tr.appendChild(createCell(record.packing.actual || 0, 
                     record.packing.actual >= record.packing.planned ? 'text-green' : 'text-red'));
                 
-                // Manpower - FIXED: Proper display
+                // Manpower - FIXED: Always display the manpower value
                 tr.appendChild(createCell(record.manpower || 0, 'font-semibold text-center'));
                 
                 // Daily Total
