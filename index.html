@@ -558,7 +558,7 @@
             <div class="empty-state" id="dailyEmptyState">
                 <i class="fas fa-clipboard-list"></i>
                 <h3>No Production Data Available</h3>
-                <p>Submit actual production data to see daily operations</p>
+                <p>Submit production data to see daily operations</p>
             </div>
             <div class="hidden" id="dailyTableContainer">
                 <table class="data-table" id="dailyTable">
@@ -573,8 +573,9 @@
                             <th colspan="5" class="column-group">PACKING</th>
                             <th rowspan="2">MANPOWER</th>
                             <th rowspan="2">DAILY TOTAL</th>
+                            <th rowspan="2">STATUS</th>
                         </tr>
-                        <tr>
+                        <tr class="sub-header">
                             <!-- Premixing -->
                             <th>Planned Product</th>
                             <th>Planned Qty</th>
@@ -648,7 +649,7 @@
             fetch(`${GOOGLE_SHEET_URL}?type=${currentProduction}&_=${timestamp}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data && data.stats && data.stats.totalProduction > 0) {
+                    if (data && data.stats && (data.stats.totalProduction > 0 || data.daily && data.daily.length > 0)) {
                         updateDashboardData(data);
                         showMessage('Data loaded successfully!', 'success');
                     } else {
@@ -779,6 +780,23 @@
                 
                 // Daily Total
                 tr.appendChild(createCell(record.dailyTotal, 'font-semibold text-center'));
+                
+                // Status column
+                let statusText = 'No Data';
+                let statusClass = '';
+                
+                if (record.hasActualData && record.hasPlannedData) {
+                    statusText = 'Completed';
+                    statusClass = 'text-green';
+                } else if (record.hasPlannedData) {
+                    statusText = 'Planned';
+                    statusClass = 'text-center';
+                } else if (record.hasActualData) {
+                    statusText = 'Actual Only';
+                    statusClass = 'text-center';
+                }
+                
+                tr.appendChild(createCell(statusText, statusClass));
                 
                 tbody.appendChild(tr);
             });
